@@ -498,7 +498,7 @@
     // Show login popup after 3 seconds
     setTimeout(function() {
       document.getElementById('loginPopup').classList.add('active');
-    }, 3000);
+    }, 7000);
 
     function closeLogin() {
       document.getElementById('loginPopup').classList.remove('active');
@@ -506,7 +506,7 @@
     }
     function completeLogin() {
       document.getElementById('loginPopup').classList.remove('active');
-      alert("You logged in successfully now you access the COVID-19 data.");
+      alert("You logged in successfully now you can access COVID-19 data.");
     }
     async function getCovidData() {
       const country = document.getElementById("country").value.trim();
@@ -583,4 +583,3 @@
   </script>
 </body>
 </html>
-
