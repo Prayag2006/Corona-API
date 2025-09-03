@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>COVID-19 Tracker</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(15px);
+      padding: 40px;
+      border-radius: 25px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+      width: 95%;
+      max-width: 480px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      animation: fadeIn 1s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .container::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: conic-gradient(
+        from 0deg,
+        #007bff,
+        #28a745,
+        #dc3545,
+        #007bff
+      );
+      animation: spin 6s linear infinite;
+      z-index: -1;
+      opacity: 0.25;
+    }
+
+    @keyframes spin {
+      100% { transform: rotate(360deg); }
+    }
+
+    h1 {
+      font-size: 34px;
+      margin-bottom: 20px;
+      color: #fff;
+      text-shadow: 2px 2px 6px rgba(0,0,0,0.3);
+      position: relative;
+      display: inline-block;
+    }
+
+    h1::after {
+      content: '';
+      display: block;
+      margin: 8px auto 0;
+      width: 70px;
+      height: 4px;
+      border-radius: 2px;
+      background: linear-gradient(90deg, #007bff, #28a745);
+    }
+
+    .search-container {
+      position: relative;
+      margin-bottom: 25px;
+    }
+
+    input {
+      width: 100%;
+      padding: 15px 20px 15px 45px;
+      border: none;
+      border-radius: 50px;
+      outline: none;
+      font-size: 16px;
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+      backdrop-filter: blur(8px);
+      transition: all 0.3s ease;
+    }
+
+    input::placeholder {
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    input:focus {
+      background: rgba(255, 255, 255, 0.3);
+      box-shadow: 0 0 10px rgba(0, 123, 255, 0.7);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: rgba(255,255,255,0.7);
+    }
+
+    button {
+      background: linear-gradient(135deg, #007bff, #0056b3);
+      color: #fff;
+      border: none;
+      padding: 14px 25px;
+      border-radius: 50px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+      transition: all 0.3s;
+      width: 100%;
+    }
+
+    button:hover {
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 6px 18px rgba(0, 123, 255, 0.5);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    .country-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 20px 0;
+      opacity: 0;
+      transform: translateY(-10px);
+      transition: all 0.5s ease;
+    }
+
+    .country-header.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .country-flag {
+      width: 50px;
+      height: 35px;
+      object-fit: cover;
+      border-radius: 5px;
+      margin-right: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    }
+
+    .country-name {
+      font-size: 24px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .stats {
+      margin-top: 20px;
+      text-align: left;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.5s ease;
+    }
+
+    .stats.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .stat-box {
+      background: rgba(255, 255, 255, 0.15);
+      padding: 20px;
+      border-radius: 15px;
+      margin: 15px 0;
+      display: flex;
+      align-items: center;
+      transition: transform 0.3s, box-shadow 0.3s;
+      border-left: 6px solid transparent;
+      backdrop-filter: blur(8px);
+    }
+
+    .stat-box:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    }
+
+    .confirmed { border-color: #007bff; }
+    .recovered { border-color: #28a745; }
+    .deaths { border-color: #dc3545; }
+
+    .stat-icon {
+      font-size: 26px;
+      margin-right: 15px;
+      width: 55px;
+      height: 55px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .confirmed .stat-icon {
+      background: rgba(0, 123, 255, 0.2);
+      color: #007bff;
+    }
+
+    .recovered .stat-icon {
+      background: rgba(40, 167, 69, 0.2);
+      color: #28a745;
+    }
+
+    .deaths .stat-icon {
+      background: rgba(220, 53, 69, 0.2);
+      color: #dc3545;
+    }
+
+    .stat-title {
+      font-weight: 600;
+      font-size: 14px;
+      color: #eee;
+      margin-bottom: 5px;
+    }
+
+    .stat-value {
+      font-weight: 700;
+      font-size: 22px;
+      color: #fff;
+      text-shadow: 1px 1px 4px rgba(0,0,0,0.4);
+    }
+
+    .last-updated {
+      margin-top: 20px;
+      font-size: 12px;
+      color: #ddd;
+      text-align: center;
+    }
+
+    .error {
+      color: #fff;
+      background: rgba(220, 53, 69, 0.7);
+      padding: 15px;
+      border-radius: 12px;
+      margin-top: 20px;
+      text-align: center;
+      border-left: 4px solid #dc3545;
+      font-weight: 600;
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 30px;
+      }
+      h1 { font-size: 28px; }
+      .stat-value { font-size: 18px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>COVID-19 Tracker</h1>
+    
+    <div class="search-container">
+      <i class="fas fa-search search-icon"></i>
+      <input type="text" id="country" placeholder="Enter country name" onkeypress="handleKeyPress(event)" />
+    </div>
+    
+    <button onclick="getCovidData()">
+      <i class="fas fa-chart-line"></i> Get Statistics
+    </button>
+
+    <div id="country-header" class="country-header"></div>
+    <div class="stats" id="result"></div>
+    <div class="last-updated" id="last-updated"></div>
+  </div>
+
+  <script>
+    async function getCovidData() {
+      const country = document.getElementById("country").value.trim();
+      if (!country) {
+        alert("Please enter a country name");
+        return;
+      }
+
+      const url = `https://disease.sh/v3/covid-19/countries/${country}`;
+      try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error("Country not found or data unavailable");
+        const data = await response.json();
+
+        document.getElementById("country-header").innerHTML = `
+          <img src="${data.countryInfo.flag}" class="country-flag" alt="${data.country} flag">
+          <div class="country-name">${data.country}</div>
+        `;
+        document.getElementById("country-header").classList.add('show');
+
+        const updated = new Date(data.updated);
+        const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+        const formattedDate = updated.toLocaleDateString('en-US', options);
+
+        document.getElementById("result").innerHTML = `
+          <div class="stat-box confirmed">
+            <div class="stat-icon"><i class="fas fa-virus"></i></div>
+            <div>
+              <div class="stat-title">CONFIRMED CASES</div>
+              <div class="stat-value">${data.cases.toLocaleString()}</div>
+            </div>
+          </div>
+          <div class="stat-box recovered">
+            <div class="stat-icon"><i class="fas fa-heart"></i></div>
+            <div>
+              <div class="stat-title">RECOVERED</div>
+              <div class="stat-value">${data.recovered.toLocaleString()}</div>
+            </div>
+          </div>
+          <div class="stat-box deaths">
+            <div class="stat-icon"><i class="fas fa-skull-crossbones"></i></div>
+            <div>
+              <div class="stat-title">DEATHS</div>
+              <div class="stat-value">${data.deaths.toLocaleString()}</div>
+            </div>
+          </div>
+        `;
+
+        document.getElementById("last-updated").innerHTML = `Last updated: ${formattedDate}`;
+        setTimeout(() => { document.getElementById("result").classList.add('show'); }, 100);
+
+      } catch (error) {
+        document.getElementById("result").innerHTML = `
+          <div class="error"><i class="fas fa-exclamation-circle"></i> ${error.message}</div>
+        `;
+        document.getElementById("country-header").classList.remove('show');
+        document.getElementById("last-updated").innerHTML = '';
+      }
+    }
+    
+    function handleKeyPress(event) {
+      if (event.key === 'Enter') getCovidData();
+    }
+  </script>
+</body>
+</html>
