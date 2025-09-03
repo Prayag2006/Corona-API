@@ -12,6 +12,77 @@
       box-sizing: border-box;
     }
 
+    /* Page Loader Styles */
+    .page-loader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      transition: opacity 0.5s ease-out;
+    }
+
+    .page-loader.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .loader-content {
+      text-align: center;
+      color: white;
+    }
+
+    .covid-loader {
+      width: 80px;
+      height: 80px;
+      position: relative;
+      margin: 0 auto 20px;
+    }
+
+    .virus-icon {
+      position: absolute;
+      font-size: 40px;
+      color: #ff6b6b;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      animation: pulse 1.5s infinite ease-in-out;
+    }
+
+    @keyframes pulse {
+      0% { transform: translate(-50%, -50%) scale(1); }
+      50% { transform: translate(-50%, -50%) scale(1.2); }
+      100% { transform: translate(-50%, -50%) scale(1); }
+    }
+
+    .spinner {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border: 3px solid transparent;
+      border-top: 3px solid #4ecdc4;
+      border-radius: 50%;
+      animation: spin 1.5s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .loader-text {
+      font-size: 18px;
+      margin-top: 10px;
+      color: #fff;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+    }
+
+    /* Rest of your existing CSS remains the same */
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
@@ -58,10 +129,6 @@
       animation: spin 6s linear infinite;
       z-index: -1;
       opacity: 0.25;
-    }
-
-    @keyframes spin {
-      100% { transform: rotate(360deg); }
     }
 
     h1 {
@@ -263,16 +330,135 @@
       font-weight: 600;
     }
 
+    /* Login Popup Styles */
+    .login-popup {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .login-popup.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .login-container {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(15px);
+      padding: 40px;
+      border-radius: 25px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+      width: 95%;
+      max-width: 400px;
+      text-align: center;
+      position: relative;
+      animation: popIn 0.5s ease;
+    }
+
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(0.8); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .login-container h2 {
+      font-size: 28px;
+      margin-bottom: 20px;
+      color: #fff;
+      text-shadow: 2px 2px 6px rgba(0,0,0,0.3);
+    }
+
+    .login-input {
+      width: 100%;
+      padding: 15px 20px;
+      border: none;
+      border-radius: 50px;
+      outline: none;
+      font-size: 16px;
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+      backdrop-filter: blur(8px);
+      margin-bottom: 20px;
+      transition: all 0.3s ease;
+    }
+
+    .login-input::placeholder {
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .login-input:focus {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .login-btn {
+      background: linear-gradient(135deg, #007bff, #0056b3);
+      color: #fff;
+      border: none;
+      padding: 14px 25px;
+      border-radius: 50px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+      transition: all 0.3s;
+      width: 100%;
+      margin-bottom: 15px;
+    }
+
+    .login-btn:hover {
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 6px 18px rgba(0, 123, 255, 0.5);
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 5px;
+      left: 150px;
+      background: transparent;
+      border: none;
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 24px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .close-btn:hover {
+      transform: rotate(90deg);
+      box-shadow: none;
+    }
+
     @media (max-width: 480px) {
       .container {
         padding: 30px;
       }
       h1 { font-size: 28px; }
       .stat-value { font-size: 18px; }
+      .login-container {
+        padding: 30px 20px;
+      }
     }
   </style>
 </head>
 <body>
+  <!-- Page Loader -->
+  <div class="page-loader" id="pageLoader">
+    <div class="loader-content">
+      <div class="covid-loader">
+        <div class="spinner"></div>
+        <i class="fas fa-virus virus-icon"></i>
+      </div>
+      <div class="loader-text">Loading COVID-19 Data...</div>
+    </div>
+  </div>
+
   <div class="container">
     <h1>COVID-19 Tracker</h1>
     
@@ -290,13 +476,50 @@
     <div class="last-updated" id="last-updated"></div>
   </div>
 
+  <!-- Login Popup -->
+  <div class="login-popup" id="loginPopup">
+    <div class="login-container">
+      <button class="close-btn" onclick="closeLogin()">&times;</button>
+      <h2>Login Required</h2>
+      <input type="text" class="login-input" placeholder="Username" />
+      <input type="password" class="login-input" placeholder="Password" />
+      <button class="login-btn" onclick="completeLogin()">Login</button>
+    </div>
+  </div>
+
   <script>
+    // Hide page loader when window is fully loaded
+    window.addEventListener('load', function() {
+      setTimeout(function() {
+        document.getElementById('pageLoader').classList.add('hidden');
+      }, 1500); // Show loader for at least 1.5 seconds for better UX
+    });
+
+    // Show login popup after 3 seconds
+    setTimeout(function() {
+      document.getElementById('loginPopup').classList.add('active');
+    }, 3000);
+
+    function closeLogin() {
+      document.getElementById('loginPopup').classList.remove('active');
+      alert("You must be logged in to access COVID-19 data.");
+    }
+    function completeLogin() {
+      document.getElementById('loginPopup').classList.remove('active');
+      alert("You must be logged in to access COVID-19 data.");
+    }
     async function getCovidData() {
       const country = document.getElementById("country").value.trim();
       if (!country) {
         alert("Please enter a country name");
         return;
       }
+
+      // Show loading state on button
+      const button = document.querySelector('button');
+      const originalText = button.innerHTML;
+      button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
+      button.disabled = true;
 
       const url = `https://disease.sh/v3/covid-19/countries/${country}`;
       try {
@@ -347,6 +570,10 @@
         `;
         document.getElementById("country-header").classList.remove('show');
         document.getElementById("last-updated").innerHTML = '';
+      } finally {
+        // Restore button state
+        button.innerHTML = originalText;
+        button.disabled = false;
       }
     }
     
